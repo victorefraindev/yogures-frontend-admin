@@ -70,7 +70,7 @@
 					<span class="truncate font-heading text-sm font-bold text-sidebar-foreground">
 						Yogures Cremosos
 					</span>
-					<span class="truncate text-xs text-muted-foreground">Panel admin</span>
+					<span class="truncate text-xs text-muted-foreground">Panel admin · Demo</span>
 				</div>
 			</div>
 		</SidebarHeader>
