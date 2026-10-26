@@ -11,13 +11,13 @@ import type {
 	TopProduct
 } from '$lib/types';
 import {
+	loadTasaBcv,
 	storeGetClient,
 	storeGetClients,
 	storeGetNotifications,
 	storeGetOrder,
 	storeGetOrders,
-	storeGetProducts,
-	storeGetTasa
+	storeGetProducts
 } from '$lib/mock/store';
 
 /**
@@ -70,12 +70,12 @@ export async function getProduct(id: string): Promise<Product | null> {
 }
 
 export async function getTasaBcv(): Promise<TasaBcv> {
-	return storeGetTasa();
+	return loadTasaBcv();
 }
 
 /** Tasa que la tienda usa para fijar precios (en demo es la misma). */
 export async function getTasaEnUso(): Promise<TasaBcv> {
-	return storeGetTasa();
+	return loadTasaBcv();
 }
 
 /** Histórico de la tasa BCV (la demo no guarda histórico). */

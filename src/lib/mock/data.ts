@@ -212,4 +212,5 @@ export const DEMO_NOTIFICATIONS: Notification[] = [
 	}
 ];
 
-export const DEMO_TASA: TasaBcv = { tasaBcv: 36.5, dolar: 1 };
+/** Fallback si DolarAPI no responde; el panel intenta usar la tasa real. */
+export const DEMO_TASA: TasaBcv = { tasaBcv: 886.23, dolar: 1 };

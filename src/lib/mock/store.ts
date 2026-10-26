@@ -21,6 +21,16 @@ import {
  */
 
 const STORE_KEY = 'yogures-admin-demo-v1';
+const DOLAR_API_URL = 'https://ve.dolarapi.com/v1/dolares/oficial';
+const TASA_CACHE_MS = 6 * 60 * 60 * 1000;
+
+let lastTasaFetch = 0;
+let tasaRequest: Promise<TasaBcv> | null = null;
+
+interface DolarApiResponse {
+	promedio?: number;
+	fechaActualizacion?: string;
+}
 
 interface DemoStore {
 	products: Product[];
@@ -215,12 +225,64 @@ export function storeGetTasa(): TasaBcv {
 	return { ...readStore().tasa };
 }
 
-export function storeRefreshTasa(): { inserted: boolean; message: string } {
+async function fetchTasaFromApi(): Promise<TasaBcv> {
+	const controller = new AbortController();
+	const timeout = setTimeout(() => controller.abort(), 8000);
+
+	let response: Response;
+	try {
+		response = await fetch(DOLAR_API_URL, {
+			cache: 'no-store',
+			signal: controller.signal
+		});
+	} finally {
+		clearTimeout(timeout);
+	}
+
+	if (!response.ok) {
+		throw new Error(`DolarAPI respondió ${response.status}`);
+	}
+
+	const data = (await response.json()) as DolarApiResponse;
+	const value = Number(data.promedio);
+	if (!Number.isFinite(value) || value <= 0) {
+		throw new Error('DolarAPI devolvió una tasa inválida');
+	}
+
 	const store = readStore();
-	store.tasa = {
-		...store.tasa,
-		tasaBcv: Math.round((store.tasa.tasaBcv + 0.01) * 100) / 100
-	};
+	store.tasa = { tasaBcv: value, dolar: 1 };
 	writeStore(store);
-	return { inserted: true, message: 'Tasa actualizada (demo)' };
+	lastTasaFetch = Date.now();
+	return { ...store.tasa };
+}
+
+/**
+ * Devuelve la tasa oficial. La primera vez consulta DolarAPI y después
+ * reutiliza el valor durante 6 h (igual que el backend real).
+ */
+export async function loadTasaBcv(force = false): Promise<TasaBcv> {
+	if (!force && lastTasaFetch > 0 && Date.now() - lastTasaFetch < TASA_CACHE_MS) {
+		return storeGetTasa();
+	}
+
+	if (tasaRequest) return tasaRequest;
+
+	tasaRequest = fetchTasaFromApi()
+		.catch(() => storeGetTasa())
+		.finally(() => {
+			tasaRequest = null;
+		});
+
+	return tasaRequest;
+}
+
+/** Fuerza la consulta a DolarAPI; si falla, propaga el error a la UI. */
+export async function storeRefreshTasa(): Promise<{ inserted: boolean; message: string }> {
+	const before = storeGetTasa().tasaBcv;
+	const next = await fetchTasaFromApi();
+	const inserted = next.tasaBcv !== before;
+	return {
+		inserted,
+		message: inserted ? 'Tasa actualizada desde DolarAPI' : 'La tasa ya está actualizada'
+	};
 }

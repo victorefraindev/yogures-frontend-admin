@@ -99,9 +99,20 @@ export async function markAllNotificationsRead(): Promise<ApiResult> {
 	return ok({ message: 'Notificaciones marcadas como leídas (demo)' });
 }
 
-/** Simula el refresco de la tasa BCV. */
+/** Consulta la tasa oficial en DolarAPI y actualiza el estado local. */
 export async function refreshTasaBcv(): Promise<
 	ApiResult<{ inserted: boolean; message: string }>
 > {
-	return ok(storeRefreshTasa());
+	try {
+		return ok(await storeRefreshTasa());
+	} catch (error) {
+		return {
+			ok: false,
+			status: 502,
+			error:
+				error instanceof Error
+					? error.message
+					: 'No se pudo consultar la tasa en DolarAPI'
+		};
+	}
 }
