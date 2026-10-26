@@ -36,7 +36,7 @@
 	"dependencies": {
 		"@jis3r/icons": "^2.7.0",
 		"@supabase/ssr": "^0.12.7",
-		"@supabase/supabase-js": "2.116.0-canary.1",
+		"@supabase/supabase-js": "^2.118.0",
 		"bits-ui": "^2.19.0",
 		"d3-scale": "^4.0.2",
 		"layerchart": "^2.3.1"
