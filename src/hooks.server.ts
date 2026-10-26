@@ -21,9 +21,9 @@ export async function handle({ event, resolve }) {
 				"default-src 'self'",
 				"script-src 'self' 'unsafe-inline'",
 				"style-src 'self' 'unsafe-inline'",
-				"img-src 'self' data: https://*.supabase.co blob:",
+				"img-src 'self' data: blob:",
 				"font-src 'self' data:",
-				"connect-src 'self' http://localhost:8080 https: wss:",
+				"connect-src 'self' https: wss:",
 				"frame-ancestors 'none'",
 				"base-uri 'self'",
 				"form-action 'self'"

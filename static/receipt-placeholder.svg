@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 520" role="img" aria-label="Comprobante de pago de demostración">
+  <rect width="400" height="520" fill="#f8fafc"/>
+  <rect x="30" y="30" width="340" height="460" rx="16" fill="#fff" stroke="#cbd5e1" stroke-width="4"/>
+  <rect x="60" y="70" width="180" height="18" rx="9" fill="#7c3aed"/>
+  <rect x="60" y="110" width="120" height="10" rx="5" fill="#cbd5e1"/>
+  <rect x="60" y="140" width="280" height="10" rx="5" fill="#e2e8f0"/>
+  <rect x="60" y="165" width="240" height="10" rx="5" fill="#e2e8f0"/>
+  <rect x="60" y="190" width="260" height="10" rx="5" fill="#e2e8f0"/>
+  <rect x="60" y="250" width="280" height="1" fill="#cbd5e1"/>
+  <rect x="60" y="280" width="160" height="12" rx="6" fill="#94a3b8"/>
+  <rect x="280" y="280" width="60" height="12" rx="6" fill="#94a3b8"/>
+  <rect x="60" y="315" width="180" height="12" rx="6" fill="#94a3b8"/>
+  <rect x="280" y="315" width="60" height="12" rx="6" fill="#94a3b8"/>
+  <rect x="60" y="370" width="280" height="1" fill="#cbd5e1"/>
+  <rect x="220" y="395" width="120" height="18" rx="9" fill="#7c3aed"/>
+  <text x="200" y="470" text-anchor="middle" font-family="sans-serif" font-size="16" fill="#64748b">Comprobante demo</text>
+</svg>

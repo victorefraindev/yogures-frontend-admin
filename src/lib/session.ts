@@ -2,12 +2,9 @@ import { redirect } from '@sveltejs/kit';
 import { SESSION_COOKIE } from '$lib/session-constants';
 
 /**
- * Auth del panel (SPA/CSR).
- * El login SSR setea la cookie `jwt` con el access_token de Supabase
- * (`httpOnly: false` para que el guard CSR del panel pueda leerla).
- *
- * TODO: con el backend real, validar la sesión contra un endpoint en lugar de
- * solo verificar la presencia de la cookie.
+ * Auth del panel en modo demo.
+ * El login SSR setea la cookie `jwt` con una marca local (no un JWT real).
+ * No hay backend ni Supabase que validar.
  */
 
 export function isAdminAuthenticated(): boolean {

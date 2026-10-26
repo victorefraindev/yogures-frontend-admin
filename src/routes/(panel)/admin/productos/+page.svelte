@@ -20,7 +20,7 @@
 	} from '$lib/client-api';
 	import { getProducts } from '$lib/api';
 	import { formatBs, formatUsd } from '$lib/format';
-	import { uploadProductImage } from '$lib/supabase/storage';
+	import { uploadProductImage } from '$lib/mock/storage';
 	import type { Product, ProductPayload, ProductSize } from '$lib/types';
 	import KpiCard from '$lib/components/kpi-card.svelte';
 	import { Badge } from '$lib/components/ui/badge/index.js';

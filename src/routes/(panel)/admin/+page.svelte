@@ -21,7 +21,7 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Separator } from '$lib/components/ui/separator/index.js';
 	import OrderStatusBadge from '$lib/components/order-status-badge.svelte';
-	import { receiptPublicUrl } from '$lib/supabase/storage';
+	import { receiptPublicUrl } from '$lib/mock/storage';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();

@@ -1,9 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit';
-import type { Actions, PageServerLoad } from './$types';
-import { PUBLIC_API_URL } from '$env/static/public';
 import { dev } from '$app/environment';
-import { createServerSupabase } from '$lib/supabase/server';
 import { SESSION_COOKIE } from '$lib/session-constants';
+import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ cookies }) => {
 	if (cookies.get(SESSION_COOKIE)) {
@@ -31,49 +29,15 @@ export const actions: Actions = {
 			return fail(400, { errors });
 		}
 
-		const supabase = createServerSupabase(cookies);
-		const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
-		if (error || !data.session) {
-			const authErrors: LoginErrors = {
-				form: 'Correo o contraseña incorrectos.'
-			};
-			return fail(401, { errors: authErrors });
-		}
-
-		const accessToken = data.session.access_token;
-
-		// Se setea temporalmente solo para validar el rol contra el backend
-		// (cookieAuth). Si el usuario no es admin, se elimina y se avisa en el form.
-		cookies.set(SESSION_COOKIE, accessToken, {
+		// Modo demo: cualquier correo y contraseña abren el panel. La cookie es
+		// una marca local, no un JWT.
+		cookies.set(SESSION_COOKIE, 'demo-admin-session', {
 			path: '/',
 			httpOnly: false,
 			sameSite: 'lax',
 			secure: !dev,
 			maxAge: 60 * 60 * 8
 		});
-
-		const apiUrl = PUBLIC_API_URL ?? 'http://localhost:8080';
-		let isAdmin = false;
-		try {
-			const res = await fetch(`${apiUrl}/api/admin/auth/verify-role`, {
-				headers: { Cookie: `${SESSION_COOKIE}=${accessToken}` }
-			});
-			if (res.ok) {
-				const { role } = (await res.json()) as { role?: string };
-				isAdmin = role === 'admin';
-			}
-		} catch {
-			isAdmin = false;
-		}
-
-		if (!isAdmin) {
-			cookies.delete(SESSION_COOKIE, { path: '/' });
-			const forbiddenErrors: LoginErrors = {
-				form: 'Correo o contraseña incorrectos.'
-			};
-			return fail(403, { errors: forbiddenErrors });
-		}
 
 		throw redirect(303, '/admin');
 	}

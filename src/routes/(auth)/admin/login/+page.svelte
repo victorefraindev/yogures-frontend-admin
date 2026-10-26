@@ -96,7 +96,7 @@
 			</span>
 			<CardTitle class="mt-3 text-2xl font-bold">Panel de Administración</CardTitle>
 			<CardDescription>
-				Ingresá tus credenciales para acceder al control de ventas, pedidos y clientes.
+				Modo demo: cualquier correo y contraseña abren el panel. No hay autenticación real.
 			</CardDescription>
 		</CardHeader>
 
@@ -111,6 +111,7 @@
 							type="email"
 							autocomplete="email"
 							aria-invalid={!!errors.email}
+							value="admin@yogures.com"
 							placeholder="admin@yogures.com"
 						/>
 						{#if errors.email}
@@ -126,6 +127,7 @@
 							type="password"
 							autocomplete="current-password"
 							aria-invalid={!!errors.password}
+							value="demo1234"
 							placeholder="••••••••"
 						/>
 						{#if errors.password}
@@ -152,7 +154,7 @@
 			</form>
 
 			<p class="mt-6 text-center text-xs text-muted-foreground">
-				El acceso se valida con las credenciales de Supabase Auth de tu proyecto.
+				Demo local: los cambios del panel se guardan en este navegador.
 			</p>
 		</CardContent>
 	</Card>

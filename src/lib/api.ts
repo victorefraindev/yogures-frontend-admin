@@ -1,16 +1,7 @@
-import { PUBLIC_API_URL } from '$env/static/public';
 import type {
 	AdminClient,
-	BackendExchangeRate,
-	BackendNotification,
-	BackendOrder,
-	BackendOrderDetail,
-	BackendProduct,
-	BackendUser,
 	Notification,
 	Order,
-	OrderItem,
-	OrderStatus,
 	OrdersByDay,
 	OrdersByMonth,
 	OrdersByStatus,
@@ -19,181 +10,75 @@ import type {
 	TopCategory,
 	TopProduct
 } from '$lib/types';
+import {
+	storeGetClient,
+	storeGetClients,
+	storeGetNotifications,
+	storeGetOrder,
+	storeGetOrders,
+	storeGetProducts,
+	storeGetTasa
+} from '$lib/mock/store';
 
 /**
- * Capa de datos del panel (se ejecuta en el cliente, CSR/SPA).
- * Llama a la API del backend con la cookie de sesión (`credentials: "include"`).
+ * Capa de datos del panel en modo demo. Todo sale del estado local; no hay
+ * fetch al backend ni a Supabase.
  */
 
-const API_URL = PUBLIC_API_URL ?? 'http://localhost:8080';
-
-async function apiGet<T>(path: string): Promise<T | null> {
-	try {
-		const res = await fetch(`${API_URL}${path}`, {
-			credentials: 'include'
-		});
-		if (!res.ok) return null;
-		return (await res.json()) as T;
-	} catch {
-		return null;
-	}
-}
-
-function toAdminClient(raw: BackendUser): AdminClient {
-	return {
-		id: raw.id,
-		name: raw.name,
-		lastname: raw.lastname,
-		email: raw.email,
-		phone: raw.phone
-	};
-}
-
 export async function getClients(): Promise<AdminClient[]> {
-	const raw = await apiGet<BackendUser[]>('/api/admin/users');
-	return raw ? raw.map(toAdminClient) : [];
+	return storeGetClients();
 }
 
 export async function getClient(userId: string): Promise<AdminClient | null> {
-	const raw = await apiGet<BackendUser>(`/api/admin/client/${userId}`);
-	return raw ? toAdminClient(raw) : null;
+	return storeGetClient(userId);
 }
 
-/** Notificaciones del admin (GET /api/admin/notifications). */
+/** Notificaciones del admin. */
 export async function getNotifications(): Promise<Notification[]> {
-	const raw = await apiGet<BackendNotification[]>('/api/admin/notifications');
-	return raw
-		? raw.map((n) => ({
-				id: n.id,
-				description: n.description,
-				status: n.status,
-				createdAt: n.created_at
-			}))
-		: [];
+	return storeGetNotifications();
 }
 
-const KNOWN_STATUSES: OrderStatus[] = [
-	'pendiente',
-	'comprobada',
-	'aprobada',
-	'entregada',
-	'rechazada'
-];
-
-function normalizeStatus(status: string): OrderStatus {
-	return KNOWN_STATUSES.includes(status as OrderStatus)
-		? (status as OrderStatus)
-		: 'pendiente';
-}
-
-function toOrder(raw: BackendOrder, items: OrderItem[]): Order {
-	const price = items.reduce((acc, i) => acc + i.unitPrice * i.quantity, 0);
-	const liters = items.reduce((acc, i) => acc + i.liters * i.quantity, 0);
-	return {
-		id: raw.id,
-		clientId: raw.user_id,
-		price,
-		orderStatus: normalizeStatus(raw.status),
-		paymentReceiptImg: raw.receipt_img || undefined,
-		deliveryDate: raw.delivery_date || undefined,
-		direction: raw.direction || undefined,
-		liters,
-		orderDate: raw.created_at,
-		items
-	};
-}
-
-async function fetchOrderItems(orderId: string, products: Product[]): Promise<OrderItem[]> {
-	const details = await apiGet<BackendOrderDetail[]>(
-		`/api/admin/orders/${orderId}/details`
-	);
-	if (!details) return [];
-
-	return details.map((d) => {
-		const product = products.find((p) => p.id === d.product_id);
-		return {
-			productId: d.product_id,
-			name: product?.name ?? 'Yogur',
-			size: d.size === 'grande' ? 'grande' : 'pequeño',
-			quantity: d.quantity,
-			unitPrice: d.quantity > 0 ? d.price / d.quantity : d.price,
-			liters: d.liters,
-			imageSrc: product?.image
-		};
-	});
-}
-
-/** Pedidos de un cliente específico (GET /api/admin/orders filtrado). */
+/** Pedidos de un cliente específico. */
 export async function getClientOrders(userId: string): Promise<Order[]> {
 	const orders = await getOrders();
-	return orders.filter((o) => o.clientId === userId);
+	return orders.filter((order) => order.clientId === userId);
 }
 
 export async function getOrders(): Promise<Order[]> {
-	const products = await getProducts();
-	const raw = await apiGet<BackendOrder[]>('/api/admin/orders');
-	if (!raw) return [];
-
-	const orders: Order[] = [];
-	for (const order of raw) {
-		const items = await fetchOrderItems(order.id, products);
-		orders.push(toOrder(order, items));
-	}
-	return orders.sort((a, b) => b.orderDate.localeCompare(a.orderDate));
+	return storeGetOrders();
 }
 
 export async function getOrder(id: string): Promise<Order | null> {
-	const raw = await apiGet<BackendOrder>(`/api/admin/orders/${id}`);
-	if (!raw) return null;
-	const products = await getProducts();
-	const items = await fetchOrderItems(id, products);
-	return toOrder(raw, items);
+	return storeGetOrder(id);
 }
 
 /** Pedidos que ya cuentan con comprobante de pago (a verificar). */
 export async function getOrdersAwaitingPayment(): Promise<Order[]> {
 	const orders = await getOrders();
-	return orders.filter((o) => o.orderStatus === 'pendiente' && o.paymentReceiptImg);
-}
-
-function toProduct(raw: BackendProduct): Product {
-	return {
-		id: raw.id,
-		name: raw.name,
-		price: raw.price,
-		description: raw.description,
-		category: raw.category,
-		liters: raw.liters,
-		size: raw.size === 'grande' ? 'grande' : 'pequeño',
-		relatedId: raw.relatedId && raw.relatedId !== 'null' ? raw.relatedId : undefined,
-		isAvailable: raw.status,
-		image: raw.productImg || undefined
-	};
+	return orders.filter(
+		(order) => order.orderStatus === 'pendiente' && order.paymentReceiptImg
+	);
 }
 
 export async function getProducts(): Promise<Product[]> {
-	const raw = await apiGet<BackendProduct[]>('/api/products');
-	return raw ? raw.map(toProduct) : [];
+	return storeGetProducts();
 }
 
 export async function getProduct(id: string): Promise<Product | null> {
 	const products = await getProducts();
-	return products.find((p) => p.id === id) ?? null;
+	return products.find((product) => product.id === id) ?? null;
 }
 
 export async function getTasaBcv(): Promise<TasaBcv> {
-	const raw = await apiGet<BackendExchangeRate[]>('/exchange-rate');
-	const first = Array.isArray(raw) ? raw[0] : undefined;
-	if (!first) return { tasaBcv: 0, dolar: 1 };
-	return { tasaBcv: first.exchange_rate_bcv, dolar: 1 };
+	return storeGetTasa();
 }
 
-/** Tasa que la tienda usa para fijar precios (no hay endpoint propio). */
+/** Tasa que la tienda usa para fijar precios (en demo es la misma). */
 export async function getTasaEnUso(): Promise<TasaBcv> {
-	return getTasaBcv();
+	return storeGetTasa();
 }
 
-/** Histórico de la tasa BCV (sin endpoint en el backend: vacío por ahora). */
+/** Histórico de la tasa BCV (la demo no guarda histórico). */
 export async function getTasaBcvHistory(): Promise<{ date: string; tasa: number }[]> {
 	return [];
 }
@@ -265,8 +150,12 @@ export function getTopProducts(orders: Order[], limit = 5): TopProduct[] {
 }
 
 /** Categorías más populares por unidades (top N). */
-export function getTopCategories(orders: Order[], products: Product[], limit = 6): TopCategory[] {
-	const categoryById = new Map(products.map((p) => [p.id, p.category]));
+export function getTopCategories(
+	orders: Order[],
+	products: Product[],
+	limit = 6
+): TopCategory[] {
+	const categoryById = new Map(products.map((product) => [product.id, product.category]));
 	const counts = new Map<string, number>();
 	for (const order of orders) {
 		for (const item of order.items) {

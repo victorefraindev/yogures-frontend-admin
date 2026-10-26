@@ -11,7 +11,7 @@
 		X
 	} from '@jis3r/icons';
 	import { updateOrderStatus } from '$lib/client-api';
-	import { receiptPublicUrl } from '$lib/supabase/storage';
+	import { receiptPublicUrl } from '$lib/mock/storage';
 	import { formatBs, formatDate } from '$lib/format';
 	import type { AdminClient, Order, OrderStatus } from '$lib/types';
 	import OrderStatusBadge from '$lib/components/order-status-badge.svelte';

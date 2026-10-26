@@ -11,7 +11,6 @@
 		Users
 	} from '@jis3r/icons';
 	import { SESSION_COOKIE } from '$lib/session-constants';
-	import { supabase } from '$lib/supabase/client';
 	import { cn } from '$lib/utils.js';
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
@@ -53,7 +52,6 @@
 	}
 
 	function logout() {
-		void supabase.auth.signOut();
 		document.cookie = `${SESSION_COOKIE}=; path=/; max-age=0`;
 		goto('/admin/login');
 	}
