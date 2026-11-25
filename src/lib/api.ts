@@ -83,20 +83,25 @@ export async function getTasaBcvHistory(): Promise<{ date: string; tasa: number 
 	return [];
 }
 
-/** Pedidos por mes para los charts del dashboard. */
+/** Pedidos por mes para los charts del dashboard (solo ventas confirmadas). */
 export async function getOrdersByMonth(): Promise<OrdersByMonth[]> {
 	const orders = await getOrders();
+	const confirmed = new Set(['comprobada', 'aprobada', 'entregada']);
 	const grouped = new Map<string, OrdersByMonth>();
 	for (const order of orders) {
+		if (!confirmed.has(order.orderStatus)) continue;
 		const { month, year } = parseOrderDate(order.orderDate);
-		const key = `${month}/${year}`;
+		// Clave ordenable (YYYY-MM); la etiqueta es solo para mostrar.
+		const key = `${year}-${String(month).padStart(2, '0')}`;
 		const label = `${MONTHS[month - 1]} ${year}`;
 		const current = grouped.get(key) ?? { month: label, pedidos: 0, ingresos: 0 };
 		current.pedidos += 1;
 		current.ingresos += order.price;
 		grouped.set(key, current);
 	}
-	return [...grouped.values()].sort((a, b) => a.month.localeCompare(b.month));
+	return [...grouped.entries()]
+		.sort(([a], [b]) => a.localeCompare(b))
+		.map(([, value]) => value);
 }
 
 /** Distribución de pedidos por estado. */

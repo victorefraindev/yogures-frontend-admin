@@ -188,6 +188,122 @@ export const DEMO_ORDERS: Order[] = [
 		'2026-10-02T12:20:00.000Z',
 		'2026-10-05',
 		[itemOf('yogur-de-mora-pequeno', 1), itemOf('yogur-de-maracuya-pequeno', 2)]
+	),
+	makeOrder(
+		'A-1005',
+		'client-3',
+		'entregada',
+		'2026-09-29T11:10:00.000Z',
+		'2026-10-02',
+		[itemOf('yogur-de-fresa-grande', 1), itemOf('yogur-de-mora-pequeno', 2)]
+	),
+	makeOrder(
+		'A-1006',
+		'client-2',
+		'rechazada',
+		'2026-09-20T16:45:00.000Z',
+		'2026-09-23',
+		[itemOf('yogur-de-maracuya-grande', 1)],
+		'/receipt-placeholder.svg'
+	),
+	makeOrder(
+		'A-1007',
+		'client-1',
+		'entregada',
+		'2026-09-09T09:30:00.000Z',
+		'2026-09-12',
+		[itemOf('yogur-de-fresa-pequeno', 2), itemOf('yogur-de-mora-grande', 1)]
+	),
+	makeOrder(
+		'A-1008',
+		'client-3',
+		'entregada',
+		'2026-08-30T10:05:00.000Z',
+		'2026-09-02',
+		[itemOf('yogur-de-maracuya-pequeno', 3)]
+	),
+	makeOrder(
+		'A-1009',
+		'client-1',
+		'comprobada',
+		'2026-08-20T14:20:00.000Z',
+		'2026-08-23',
+		[itemOf('yogur-de-mora-pequeno', 2), itemOf('yogur-de-fresa-grande', 1)],
+		'/receipt-placeholder.svg'
+	),
+	makeOrder(
+		'A-1010',
+		'client-2',
+		'entregada',
+		'2026-08-09T12:00:00.000Z',
+		'2026-08-12',
+		[itemOf('yogur-de-fresa-pequeno', 1), itemOf('yogur-de-maracuya-grande', 1)]
+	),
+	makeOrder(
+		'A-1011',
+		'client-3',
+		'entregada',
+		'2026-07-29T09:45:00.000Z',
+		'2026-08-01',
+		[itemOf('yogur-de-mora-grande', 2)]
+	),
+	makeOrder(
+		'A-1012',
+		'client-2',
+		'entregada',
+		'2026-07-18T17:10:00.000Z',
+		'2026-07-21',
+		[itemOf('yogur-de-maracuya-pequeno', 2), itemOf('yogur-de-fresa-pequeno', 1)]
+	),
+	makeOrder(
+		'A-1013',
+		'client-1',
+		'aprobada',
+		'2026-07-07T11:35:00.000Z',
+		'2026-07-10',
+		[itemOf('yogur-de-fresa-grande', 2)],
+		'/receipt-placeholder.svg'
+	),
+	makeOrder(
+		'A-1014',
+		'client-3',
+		'entregada',
+		'2026-06-27T15:00:00.000Z',
+		'2026-06-30',
+		[itemOf('yogur-de-mora-pequeno', 3)]
+	),
+	makeOrder(
+		'A-1015',
+		'client-2',
+		'entregada',
+		'2026-06-16T10:25:00.000Z',
+		'2026-06-19',
+		[itemOf('yogur-de-maracuya-grande', 1), itemOf('yogur-de-mora-grande', 1)]
+	),
+	makeOrder(
+		'A-1016',
+		'client-1',
+		'comprobada',
+		'2026-06-05T13:40:00.000Z',
+		'2026-06-08',
+		[itemOf('yogur-de-fresa-pequeno', 2)],
+		'/receipt-placeholder.svg'
+	),
+	makeOrder(
+		'A-1017',
+		'client-3',
+		'entregada',
+		'2026-05-22T09:00:00.000Z',
+		'2026-05-25',
+		[itemOf('yogur-de-fresa-grande', 1), itemOf('yogur-de-maracuya-pequeno', 1)]
+	),
+	makeOrder(
+		'A-1018',
+		'client-2',
+		'entregada',
+		'2026-05-08T12:15:00.000Z',
+		'2026-05-11',
+		[itemOf('yogur-de-mora-grande', 2)]
 	)
 ];
 
